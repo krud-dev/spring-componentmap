@@ -38,18 +38,18 @@ TBD
 <dependency>
   <groupId>dev.krud</groupId>
   <artifactId>spring-componentmap</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 
 ### Gradle
 #### Groovy DSL
 ```groovy
-implementation 'dev.krud:spring-componentmap:0.0.1'
+implementation 'dev.krud:spring-componentmap:0.1.0'
 ```
 #### Kotlin DSL
 ```kotlin
-implementation("dev.krud:spring-componentmap:0.0.1")
+implementation("dev.krud:spring-componentmap:0.1.0")
 ```
 
 ## Contributing
