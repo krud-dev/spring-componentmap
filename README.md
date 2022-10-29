@@ -21,11 +21,13 @@
 
 ## Overview
 
-TBD 
+spring-componentmap is a JVM library that provides a simple way to inject a map of beans by type.
 
-## Documentation
+The library allows both the injection of a map of beans by type and the injection of a map of lists of beans by type.
 
-TBD
+## Example
+
+Head to the [Examples directory](spring-componentmap/src/test/kotlin/dev/krud/spring/componentmap/examples) to see usage examples.
 
 ## Installation
 ### Requirements
@@ -50,6 +52,91 @@ implementation 'dev.krud:spring-componentmap:0.1.0'
 #### Kotlin DSL
 ```kotlin
 implementation("dev.krud:spring-componentmap:0.1.0")
+```
+
+### Setup
+
+Simply add the dependency to your Spring Boot project, Spring Boot will then run the `ComponentMapAutoConfiguration` class and register the `ComponentMapBeanPostProcessor` bean.
+
+### Usage
+
+To use the `@ComponentMap` annotation, simply add it to a `Map` field and Spring Boot will automatically populate it with all beans of the specified type.
+
+#### Kotlin Example
+
+```kotlin
+interface ActionHandler {
+    /**
+     * The action that this handler can handle, add the `@ComponentMapKey` annotation to the getter in order to register it
+     */
+    @get:ComponentMapKey
+    val type: String
+    fun handle()
+}
+
+class ActionHandler1 : ActionHandler {
+    override val type = "type1"
+    override fun handle() {
+        println("ActionHandler1")
+    }
+}
+
+class ActionHandler2 : ActionHandler {
+    override val type = "type2"
+    override fun handle() {
+        println("ActionHandler2")
+    }
+}
+
+@Component
+class ActionHandlerMap {
+    /**
+     * The `@ComponentMap` annotation will automatically populate this map with all beans of type `ActionHandler`
+     */
+    @ComponentMap private lateinit var handlers: Map<String, ActionHandler>
+    
+    fun handle(type: String) {
+        handlers[type]?.handle()
+    }
+}
+```
+
+#### Java Example
+
+```java
+@Component
+public class ActionHandlerMap {
+    /**
+     * The `@ComponentMap` annotation will automatically populate this map with all beans of type `ActionHandler`
+     */
+    @ComponentMap private Map<String, ActionHandler> handlers;
+    
+    public void handle(String type) {
+        handlers.get(type).handle();
+    }
+}
+
+public interface ActionHandler {
+    /**
+     * The action that this handler can handle, add the `@ComponentMapKey` annotation to the getter in order to register it
+     */
+    @ComponentMapKey
+    String getType();
+    void handle();
+}
+
+@Component
+public class ActionHandler1 implements ActionHandler {
+    @Override
+    public String getType() {
+        return "type1";
+    }
+
+    @Override
+    public void handle() {
+        System.out.println("ActionHandler1");
+    }
+}
 ```
 
 ## Contributing
