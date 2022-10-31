@@ -4,6 +4,7 @@ plugins {
     `java-library`
     `maven-publish`
     signing
+    jacoco
     id("org.jetbrains.dokka") version "1.6.0"
 }
 
@@ -85,4 +86,11 @@ if (hasProperty("release")) {
             }
         }
     }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
 }
