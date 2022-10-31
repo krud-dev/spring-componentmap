@@ -1,5 +1,6 @@
 <br/>
 <h1 align="center">spring-componentmap</h1>
+<div align="center">
 
 [![Awesome Kotlin](https://img.shields.io/badge/awesome-kotlin-orange?logo=awesomelists)](https://kotlin.link/)
 ![Maven Central](https://img.shields.io/maven-central/v/dev.krud/spring-componentmap)
@@ -7,6 +8,8 @@
 [![Codecov](https://img.shields.io/codecov/c/gh/krud-dev/spring-componentmap?token=1EG9H9RK5Q)](https://codecov.io/gh/krud-dev/spring-componentmap)
 [![GitHub](https://img.shields.io/github/license/krud-dev/spring-componentmap)](https://github.com/krud-dev/spring-componentmap/blob/master/LICENSE)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/krud-dev/spring-componentmap/issues)
+
+</div>
 
 - [Overview](#overview)
 - [Documentation](#documentation)
@@ -93,7 +96,8 @@ class ActionHandlerMap {
     /**
      * The `@ComponentMap` annotation will automatically populate this map with all beans of type `ActionHandler`
      */
-    @ComponentMap private lateinit var handlers: Map<String, ActionHandler>
+    @ComponentMap 
+    private lateinit var handlers: Map<String, ActionHandler>
     
     fun handle(type: String) {
         handlers[type]?.handle()
@@ -109,7 +113,8 @@ public class ActionHandlerMap {
     /**
      * The `@ComponentMap` annotation will automatically populate this map with all beans of type `ActionHandler`
      */
-    @ComponentMap private Map<String, ActionHandler> handlers;
+    @ComponentMap 
+    private Map<String, ActionHandler> handlers;
     
     public void handle(String type) {
         handlers.get(type).handle();
