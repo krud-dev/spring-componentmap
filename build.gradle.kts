@@ -88,9 +88,16 @@ if (hasProperty("release")) {
     }
 }
 
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
-}
-tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
+subprojects {
+    apply(plugin = "jacoco")
+    tasks.withType<Test> {
+        finalizedBy(tasks.withType<JacocoReport>())
+    }
+    tasks.withType<JacocoReport> {
+        dependsOn(tasks.test)
+        reports {
+            xml.required.set(true)
+            html.required.set(false)
+        }
+    }
 }
