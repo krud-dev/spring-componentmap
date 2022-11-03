@@ -68,29 +68,6 @@ To use the `@ComponentMap` annotation, simply add it to a `Map` field and Spring
 #### Kotlin Example
 
 ```kotlin
-interface ActionHandler {
-    /**
-     * The action that this handler can handle, add the `@ComponentMapKey` annotation to the getter in order to register it
-     */
-    @get:ComponentMapKey
-    val type: String
-    fun handle()
-}
-
-class ActionHandler1 : ActionHandler {
-    override val type = "type1"
-    override fun handle() {
-        println("ActionHandler1")
-    }
-}
-
-class ActionHandler2 : ActionHandler {
-    override val type = "type2"
-    override fun handle() {
-        println("ActionHandler2")
-    }
-}
-
 @Component
 class ActionHandlerMap {
     /**
@@ -101,6 +78,31 @@ class ActionHandlerMap {
     
     fun handle(type: String) {
         handlers[type]?.handle()
+    }
+}
+
+interface ActionHandler {
+    /**
+     * The action that this handler can handle, add the `@ComponentMapKey` annotation to the getter in order to register it
+     */
+    @get:ComponentMapKey
+    val type: String
+    fun handle()
+}
+
+@Component
+class ActionHandler1 : ActionHandler {
+    override val type = "type1"
+    override fun handle() {
+        println("ActionHandler1")
+    }
+}
+
+@Component
+class ActionHandler2 : ActionHandler {
+    override val type = "type2"
+    override fun handle() {
+        println("ActionHandler2")
     }
 }
 ```
@@ -140,6 +142,19 @@ public class ActionHandler1 implements ActionHandler {
     @Override
     public void handle() {
         System.out.println("ActionHandler1");
+    }
+}
+
+@Component
+public class ActionHandler2 implements ActionHandler {
+    @Override
+    public String getType() {
+        return "type2";
+    }
+
+    @Override
+    public void handle() {
+        System.out.println("ActionHandler2");
     }
 }
 ```
