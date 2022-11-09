@@ -28,6 +28,12 @@ spring-componentmap is a JVM library that provides a simple way to inject a map 
 
 The library allows both the injection of a map of beans by type and the injection of a map of lists of beans by type.
 
+## Documentation
+
+To learn how to get started with *spring-componentmap*, visit the official documentation website. You'll find in-depth documentation, tips and guides to help you get up and running.
+
+[Click here](https://componentmap.krud.dev/)
+
 ## Example
 
 Head to the [Examples directory](spring-componentmap/src/test/kotlin/dev/krud/spring/componentmap/examples) to see usage examples.
