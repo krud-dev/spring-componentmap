@@ -30,6 +30,9 @@ class TestMapUser {
 
     @ComponentMap
     lateinit var multiMap: Map<String, List<TestHandler>>
+
+    @ComponentMap
+    lateinit var subMap: Map<String, SubInterface>
 }
 
 @Configuration
@@ -47,5 +50,29 @@ class ComponentMapTestConfig {
     fun testImpl2Duplicate() = TestImpl2Duplicate()
 
     @Bean
+    fun subImpl() = SubImpl()
+
+    @Bean
+    fun subImpl2() = SubImpl2()
+
+    @Bean
     fun testMapUser() = TestMapUser()
+}
+
+interface BaseInterface {
+    @get:ComponentMapKey
+    val type: String
+}
+
+interface SubInterface : BaseInterface {
+}
+
+class SubImpl : SubInterface {
+    override val type: String
+        get() = "SubImpl"
+}
+
+class SubImpl2 : SubInterface {
+    override val type: String
+        get() = "SubImpl2"
 }
