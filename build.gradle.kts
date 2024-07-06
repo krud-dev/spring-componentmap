@@ -57,7 +57,7 @@ allprojects {
                 pom {
                     name.set(project.name)
                     description.set("A Kotlin library for intelligent object mapping.")
-                    url.set("https://github.com/krud-dev/shapeshift/shapeshift")
+                    url.set("https://github.com/krud-dev/spring-componentmap")
                     licenses {
                         license {
                             name.set("MIT License")
