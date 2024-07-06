@@ -1,10 +1,10 @@
 package dev.krud.spring.componentmap
 
+import org.apache.commons.lang3.ClassUtils
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.WildcardType
-import java.util.*
 
 internal fun Field.getGenericClass(index: Int): Class<*>? {
     return try {
@@ -64,4 +64,37 @@ fun getMethods(type: Class<*>): List<Method> {
         classToGetMethods = classToGetMethods.superclass
     }
     return methods
+}
+
+fun getMethodDeclarer(method: Method): List<Class<*>> {
+    var declaringClass: Class<*> = method.declaringClass
+    val methodName: String = method.name
+    val parameterTypes: Array<Class<*>> = method.parameterTypes
+    val allInterfaces = ClassUtils.getAllInterfaces(declaringClass).toMutableList()
+    val possibleDeclarers = mutableListOf<Class<*>>()
+    var methodFound = false
+    for (interfaceType in allInterfaces) {
+        try {
+            interfaceType.getMethod(methodName, *parameterTypes)
+            methodFound = true
+        } catch (ex: NoSuchMethodException) {
+            if (methodFound) {
+                break
+            }
+        }
+        possibleDeclarers.add(interfaceType)
+    }
+    while (true) {
+        declaringClass = declaringClass.superclass ?: break
+        try {
+            declaringClass.getMethod(methodName, *parameterTypes)
+            methodFound = true
+        } catch (ex: NoSuchMethodException) {
+            if (methodFound) {
+                break
+            }
+        }
+        possibleDeclarers.add(declaringClass)
+    }
+    return possibleDeclarers
 }

@@ -18,6 +18,12 @@ class ComponentMapTest {
     private lateinit var testImpl2: TestImpl2
 
     @Autowired
+    private lateinit var subImpl: SubImpl
+
+    @Autowired
+    private lateinit var subImpl2: SubImpl2
+
+    @Autowired
     private lateinit var testImpl2Duplicate: TestImpl2Duplicate
 
     @Autowired
@@ -43,5 +49,14 @@ class ComponentMapTest {
             testImpl2.type to listOf(testImpl2, testImpl2Duplicate)
         )
         assertEquals(expected, testMapUser.multiMap)
+    }
+
+    @Test
+    fun `subMap should populate`() {
+        val expected = mapOf(
+            subImpl.type to subImpl,
+            subImpl2.type to subImpl2
+        )
+        assertEquals(expected, testMapUser.subMap)
     }
 }

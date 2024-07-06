@@ -1,12 +1,9 @@
 package dev.krud.spring.componentmap
 
-import org.apache.commons.lang3.ClassUtils
-import org.springframework.aop.TargetClassAware
 import org.springframework.aop.framework.Advised
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.util.ReflectionUtils
-import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
 class ComponentMapPostProcessor : BeanPostProcessor {
@@ -14,24 +11,16 @@ class ComponentMapPostProcessor : BeanPostProcessor {
     private val componentMaps: MutableMap<ComponentMapIdentifier, MutableMap<Any, MutableList<Any>>> = ConcurrentHashMap()
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any {
-        try {
-            registerComponentMapKeyIfExists(bean)
-            fillComponentMapIfExists(bean)
-        } catch (e: Exception) {
-        }
+        registerComponentMapKey(bean)
+        fillComponentMapsIfExist(bean)
         return bean
     }
 
-    private fun fillComponentMapIfExists(bean: Any) {
-        var handler: Any? = bean
-        if (handler is TargetClassAware) {
-            try {
-                handler = (handler as Advised).targetSource.target
-            } catch (e: Exception) {
-            }
+    private fun fillComponentMapsIfExist(bean: Any) {
+        var handler: Any = bean
+        if (handler is Advised) {
+            handler = handler.targetSource.target ?: error("Target is null")
         }
-
-        handler ?: error("Handler is null")
 
         val fields = getFields(handler.javaClass)
 
@@ -80,20 +69,20 @@ class ComponentMapPostProcessor : BeanPostProcessor {
         return componentMaps[identifier]!!
     }
 
-    private fun registerComponentMapKeyIfExists(bean: Any) {
+    private fun registerComponentMapKey(bean: Any) {
         val methods = getMethods(bean.javaClass)
 
         for (method in methods) {
             val annotation = AnnotationUtils.findAnnotation(method, ComponentMapKey::class.java)
             if (annotation != null) {
-                try {
-                    val key = method.invoke(bean)
-                    val keyClass = key::class.java
-                    val valueClass = getMethodDeclarer(method)
-                    val map = getOrCreateComponentMap(keyClass, valueClass)
+                val key = method.invoke(bean)
+                val keyClass = key::class.java
+                val valueClasses = getMethodDeclarer(method)
+                valueClasses.forEach {
+                    val map = getOrCreateComponentMap(keyClass, it)
                     val list = map.computeIfAbsent(key) { mutableListOf() }
                     list += bean
-                } catch (e: Exception) {
+
                 }
             }
         }
@@ -101,25 +90,3 @@ class ComponentMapPostProcessor : BeanPostProcessor {
 }
 
 private data class ComponentMapIdentifier(val keyClazz: Class<*>, val valueClazz: Class<*>)
-
-fun getMethodDeclarer(method: Method): Class<*> {
-    var declaringClass: Class<*> = method.declaringClass
-    val methodName: String = method.name
-    val parameterTypes: Array<Class<*>> = method.parameterTypes
-    for (interfaceType in ClassUtils.getAllInterfaces(declaringClass)) try {
-        return interfaceType.getMethod(methodName, *parameterTypes).declaringClass
-    } catch (ex: NoSuchMethodException) {
-    }
-    while (true) {
-        declaringClass = declaringClass.superclass
-        if (declaringClass == null) break
-        try {
-            val newMethod = declaringClass.getMethod(methodName, *parameterTypes)
-            return getMethodDeclarer(newMethod)
-        } catch (ex: NoSuchMethodException) {
-            break
-        }
-    }
-
-    error("Could not find method declarer for ${method.declaringClass.canonicalName}::${method.name}")
-}
